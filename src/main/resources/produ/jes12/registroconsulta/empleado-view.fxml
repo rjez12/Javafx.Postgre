@@ -1,14 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox spacing="15.0" styleClass="root" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="produ.jes12.registroconsulta.controller.EmpleadoController">
 
-</AnchorPane>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Label styleClass="titulo-principal" text="REGISTRO DE EMPLEADOS" />
+    <VBox spacing="10.0">
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblNombres" prefWidth="120.0" text="Nombres:" />
+                <TextField fx:id="txtNombres" promptText="Ej. Juan Carlos" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblApellidos" prefWidth="120.0" text="Apellidos:" />
+                <TextField fx:id="txtApellidos" promptText="Ej. Pérez Gómez" HBox.hgrow="ALWAYS" />
+            </HBox>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblCedula" prefWidth="120.0" text="Cédula:" />
+                <TextField fx:id="txtCedula" promptText="001-000000-0000A" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblCorreo" prefWidth="120.0" text="Correo:" />
+                <TextField fx:id="txtCorreo" promptText="ejemplo@correo.com" HBox.hgrow="ALWAYS" />
+            </HBox>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblTelefono" prefWidth="120.0" text="Teléfono:" />
+                <TextField fx:id="txtTelefono" promptText="88888888" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblCargo" prefWidth="120.0" text="Cargo:" />
+                <TextField fx:id="txtCargo" promptText="Ej. Desarrollador" HBox.hgrow="ALWAYS" />
+            </HBox>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblDepartamento" prefWidth="120.0" text="Departamento:" />
+                <ComboBox fx:id="cmbDepartamento" promptText="Seleccione..." HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblSalario" prefWidth="120.0" text="Salario:" />
+                <TextField fx:id="txtSalario" promptText="0.00" HBox.hgrow="ALWAYS" />
+            </HBox>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblFechaContratacion" prefWidth="120.0" text="Fecha Contratación:" />
+                <DatePicker fx:id="dtpFechaContratacion" promptText="dd/mm/aaaa" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblEstado" prefWidth="120.0" text="Estado:" />
+                <ComboBox fx:id="cmbEstado" promptText="Seleccione..." HBox.hgrow="ALWAYS" />
+            </HBox>
+        </HBox>
+    </VBox>
+    <HBox alignment="CENTER" spacing="15.0" styleClass="button-bar">
+        <Button fx:id="btnGuardar" onAction="#guardarEmpleado" styleClass="btn btn-guardar" text="Guardar" />
+        <Button fx:id="btnLimpiar" onAction="#limpiarFormulario" styleClass="btn btn-limpiar" text="Limpiar" />
+        <Button fx:id="btnActualizar" onAction="#cargarEmpleados" styleClass="btn btn-actualizar" text="Actualizar Tabla" />
+    </HBox>
+    <Separator />
+    <Label styleClass="subtitulo-tabla" text="EMPLEADOS REGISTRADOS" />
+    <TableView fx:id="tblEmpleados" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+            <TableColumn fx:id="colNombres" prefWidth="110.0" text="Nombres" />
+            <TableColumn fx:id="colApellidos" prefWidth="110.0" text="Apellidos" />
+            <TableColumn fx:id="colCedula" prefWidth="110.0" text="Cédula" />
+            <TableColumn fx:id="colCorreo" prefWidth="140.0" text="Correo" />
+            <TableColumn fx:id="colTelefono" prefWidth="90.0" text="Teléfono" />
+            <TableColumn fx:id="colCargo" prefWidth="110.0" text="Cargo" />
+            <TableColumn fx:id="colDepartamento" prefWidth="120.0" text="Departamento" />
+            <TableColumn fx:id="colSalario" prefWidth="90.0" text="Salario" />
+            <TableColumn fx:id="colFechaContratacion" prefWidth="100.0" text="Contratación" />
+            <TableColumn fx:id="colEstado" prefWidth="80.0" text="Estado" />
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+    </TableView>
+</VBox>
