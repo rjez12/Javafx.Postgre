@@ -50,7 +50,6 @@ public class EmpleadoController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         configurarColumnas();
         cargarOpcionesComboBox();
-        cargarEmpleados();
     }
 
     private void configurarColumnas() {
@@ -83,38 +82,92 @@ public class EmpleadoController implements Initializable {
     }
 
     @FXML
-    public void cargarEmpleados() {
-        listaEmpleados.clear();
-        String sql = "SELECT id, nombres, apellidos, cedula, correo, telefono, cargo, departamento, salario, fecha_contratacion, estado FROM empleado ORDER BY id ASC";
+    private void ActualizarEmpleados() {
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        Empleado empleadoSeleccionado =
+                tblEmpleados.getSelectionModel().getSelectedItem();
 
-            while (rs.next()) {
-                Empleado emp = new Empleado(
-                        rs.getInt("id"),
-                        rs.getString("nombres"),
-                        rs.getString("apellidos"),
-                        rs.getString("cedula"),
-                        rs.getString("correo"),
-                        rs.getString("telefono"),
-                        rs.getString("cargo"),
-                        rs.getString("departamento"),
-                        rs.getDouble("salario"),
-                        rs.getDate("fecha_contratacion").toLocalDate(),
-                        rs.getString("estado")
-                );
-                listaEmpleados.add(emp);
-            }
+        if (empleadoSeleccionado == null) {
+            mostrarAlerta(
+                    Alert.AlertType.WARNING,
+                    "Selección Requerida",
+                    "Seleccione un empleado para actualizar."
+            );
+            return;
+        }
+
+        if (validarFormulario()) {
+            return;
+        }
+
+        String sql = "UPDATE empleados SET "
+                + "nombres = ?, "
+                + "apellidos = ?, "
+                + "cedula = ?, "
+                + "correo = ?, "
+                + "telefono = ?, "
+                + "cargo = ?, "
+                + "departamento = ?, "
+                + "salario = ?, "
+                + "fecha_contratacion = ?, "
+                + "estado = ? "
+                + "WHERE id = ?";
+
+        try (
+                Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(1, txtNombres.getText().trim());
+            statement.setString(2, txtApellidos.getText().trim());
+            statement.setString(3, txtCedula.getText().trim());
+            statement.setString(4, txtCorreo.getText().trim());
+            statement.setString(5, txtTelefono.getText().trim());
+            statement.setString(6, txtCargo.getText().trim());
+            statement.setString(7, cmbDepartamento.getValue().toString());
+
+            statement.setDouble(
+                    8,
+                    Double.parseDouble(txtSalario.getText().trim())
+            );
+
+            statement.setDate(
+                    9,
+                    java.sql.Date.valueOf(dtpFechaContratacion.getValue())
+            );
+
+            statement.setString(
+                    10,
+                    cmbEstado.getValue().toString()
+            );
+
+            statement.setInt(
+                    11,
+                    empleadoSeleccionado.getId()
+            );
+
+            statement.executeUpdate();
+
+            mostrarAlerta(
+                    Alert.AlertType.INFORMATION,
+                    "Éxito",
+                    "Empleado actualizado correctamente."
+            );
+
+            limpiarFormulario();
 
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Base de Datos", "No se pudieron consultar los empleados:\n" + e.getMessage());
+
+            mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "Error SQL",
+                    "Error al actualizar el empleado: " + e.getMessage()
+            );
         }
     }
 
     @FXML
-    public void guardarEmpleado(ActionEvent event) {
+    public void guardarEmpleado() {
         if (!validarFormulario()) {
             return;
         }
@@ -138,8 +191,8 @@ public class EmpleadoController implements Initializable {
             int filasInsertadas = ps.executeUpdate();
             if (filasInsertadas > 0) {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Empleado registrado correctamente.");
-                limpiarFormulario(null);
-                cargarEmpleados();
+                limpiarFormulario();
+                ActualizarEmpleados();
             }
 
         } catch (SQLException e) {
@@ -148,7 +201,7 @@ public class EmpleadoController implements Initializable {
     }
 
     @FXML
-    public void limpiarFormulario(ActionEvent event) {
+    public void limpiarFormulario() {
         txtNombres.clear();
         txtApellidos.clear();
         txtCedula.clear();
@@ -206,5 +259,62 @@ public class EmpleadoController implements Initializable {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+
+    }
+
+    @FXML
+    private void eliminarEmpleado() {
+
+        Empleado empleadoSeleccionado =
+                tblEmpleados.getSelectionModel().getSelectedItem();
+
+        if (empleadoSeleccionado == null) {
+            mostrarAlerta(
+                    Alert.AlertType.WARNING,
+                    "Selección requerida",
+                    "Seleccione un empleado para eliminar."
+            );
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmación");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText(
+                "¿Está seguro que desea eliminar este empleado?"
+        );
+
+        if (confirmacion.showAndWait().isEmpty()
+                || confirmacion.getResult() != ButtonType.OK) {
+            return;
+        }
+
+        String sql = "DELETE FROM empleados WHERE id = ?";
+
+        try (
+                Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(1, empleadoSeleccionado.getId());
+
+            statement.executeUpdate();
+
+            mostrarAlerta(
+                    Alert.AlertType.INFORMATION,
+                    "Éxito",
+                    "Empleado eliminado correctamente."
+            );
+
+            limpiarFormulario();
+
+        } catch (SQLException e) {
+
+            mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "Error SQL",
+                    "Error al eliminar el empleado: " + e.getMessage()
+            );
+        }
     }
 }
